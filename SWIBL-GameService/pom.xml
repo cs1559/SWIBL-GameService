@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>SWIBL-GameService</groupId>
+  <artifactId>SWIBL-GameService</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  
+  <distributionManagement>
+    <repository>
+      <id>local.dir</id>
+      <name>Local Folder</name>
+      <url>file://C:\xampp\htdocs\swibl\games</url>
+    </repository>
+  </distributionManagement>
+  
+    <build>
+	    <sourceDirectory>C:\dev\Git-Repository\SWIBL-GameService\SWIBL-GameService\</sourceDirectory>
+	    <scriptSourceDirectory>C:\Users\Admin\git\SWIBL-GameService\SWIBL-GameService\src\main\scripts</scriptSourceDirectory>
+	    <testSourceDirectory>C:\Users\Admin\git\SWIBL-GameService\SWIBL-GameService\src\test\java</testSourceDirectory>
+	    <outputDirectory>C:\xampp\htdocs\swibl\games</outputDirectory>
+	    <testOutputDirectory>C:\xampp\htdocs\swibl\games</testOutputDirectory>
+         	
+    <plugins>
+      
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+
+			<execution>
+				<id>id.deploy.local</id>
+				<phase>install</phase>
+				<goals>
+					<goal>run</goal>
+				</goals>
+				<configuration>
+					<target>
+						<echo>package phase</echo>
+						<copy file="${project.build.sourceDirectory}/readme.txt" todir="${project.build.outputDirectory}/readme.txt"/>
+						<copy todir="${project.build.outputDirectory}">
+						    <fileset dir="${project.build.sourceDirectory}"/>
+						</copy>
+					</target>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
+                  
+      
+    </plugins>
+  </build>
+  
+  
+</project>
