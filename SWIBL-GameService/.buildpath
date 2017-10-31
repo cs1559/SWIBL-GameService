@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <buildpath>
 	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
-	<buildpathentry kind="src" path="lib">
+	<buildpathentry kind="src" path="src/cjs/lib">
+		<attributes>
+			<attribute name="composer" value="source"/>
+		</attributes>
+	</buildpathentry>
+	<buildpathentry kind="src" path="src/swibl">
 		<attributes>
 			<attribute name="composer" value="source"/>
 		</attributes>

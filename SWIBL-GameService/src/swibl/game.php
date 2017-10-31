@@ -52,10 +52,6 @@ class Game extends \cjs\lib\BaseObject {
   var $_homelogo = null;
   var $_awaylogo = null;
   
-	function __construct() {
-		parent::__construct();
-	}
-
 	function setId($inParm) {
 		$this->id = $inParm;
 	}

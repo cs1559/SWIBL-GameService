@@ -4,6 +4,7 @@ namespace cjs\lib;
 class Factory {
     
     function getDatabase() {
+        $parms = array();
         $parms["driver"] = "MySQL";
         $parms["host"] = "127.0.0.1";
         $parms["database"] = "games";

@@ -1,8 +1,6 @@
 <?php
 namespace cjs\lib;
 
-use cjs\lib\Error;
-
 class ServiceResponse {
     
     const SUCCESS = true;

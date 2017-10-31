@@ -3,6 +3,7 @@ namespace cjs\lib;
 
 use Exception;
 
+
 class Database {
 	
 	var $_connection = null;

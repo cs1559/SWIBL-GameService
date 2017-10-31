@@ -17,16 +17,23 @@ class GameHelper {
      * @return \TeamMS\Team
      */
     public static function bind($result) {
-       
-        $fieldArray = array(
+       die('hello world');
+        print_r($result);
+        exit;
+        
+        $fieldMap = array(
             "id" => "setId",
             "division_id" => "setDivisionId",
             "season" => "setSeason"
         );
         
-        foreach ($fieldArray as $key => $val) {
-            echo "key = " . $key . " Value = ".$val;
+        $game = new Game();
+        foreach ($fieldMap as $field => $method) {
+            if (isset($result[$field]))
+                $game->$method($result[$field]);
+                
         }
+        print_r($game);
         exit;
         
         
@@ -55,20 +62,20 @@ class GameHelper {
      * @return \TeamMS\Team
      */
     public static function bindJSON($result) {
-        $team = new \TeamMS\Team();
-        $team->setId($result->id);
-        $team->setName($result->name);
-        $team->setWebsite($result->website_url);
-        $team->setCity($result->city);
-        $team->setState($result->state);
-        $team->setLogo($result->logo);
-        $team->setCoachEmail($result->coachemail);
-        $team->setCoachName($result->coachname);
-        $team->setCoachPhone($result->coachphone);
-        $team->setOwnerId($result->ownerid);
-        $team->setHits($result->hits);
-        $team->setLastUpdated($result->lastupdated);
-        $team->setLastUpdatedBy($result->lastupdatedby);
+//         $team = new \TeamMS\Team();
+//         $team->setId($result->id);
+//         $team->setName($result->name);
+//         $team->setWebsite($result->website_url);
+//         $team->setCity($result->city);
+//         $team->setState($result->state);
+//         $team->setLogo($result->logo);
+//         $team->setCoachEmail($result->coachemail);
+//         $team->setCoachName($result->coachname);
+//         $team->setCoachPhone($result->coachphone);
+//         $team->setOwnerId($result->ownerid);
+//         $team->setHits($result->hits);
+//         $team->setLastUpdated($result->lastupdated);
+//         $team->setLastUpdatedBy($result->lastupdatedby);
      
         return $team;
     }

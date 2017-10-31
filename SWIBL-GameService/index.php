@@ -38,8 +38,11 @@ $app = new \Slim\App($config);
 
 $app->get('/{id}', function (Request $request, Response $response) {
 
-    $dao = new swibl\GamesDAO();
-    $game = $dao->getGame($request->getAttribute('id'));
+    $dao = new \swibl\GamesDAO();
+    
+    $result = $dao->getGame($request->getAttribute('id'));
+    $game = \swibl\GameHelper::bind($result);
+    echo json_encode($game);
 
     if($game) {
         $response->withHeader('Content-Type', 'application/json');

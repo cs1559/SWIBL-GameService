@@ -1,6 +1,8 @@
 <?php
 namespace swibl;
 
+use cjs\lib\Factory;
+
 class GamesDAO {
     
     /**
