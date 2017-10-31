@@ -15,11 +15,11 @@ class GamesDAO {
         $db = &\cjs\lib\Factory::getDatabase();
         $db->setQuery("select * from joom_jleague_scores where id = " . $id);
         try {
-            $game = $db->loadObject(); 
-        } catch (\Exception $e) {
+            $result = $db->loadObject(); 
+         } catch (\Exception $e) { 
             throw $e;
         }
-        return $game;
+        return $result;
     }
     
     /**
