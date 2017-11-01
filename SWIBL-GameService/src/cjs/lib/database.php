@@ -4,6 +4,7 @@ namespace cjs\lib;
 use Exception;
 
 
+
 class Database {
 	
 	var $_connection = null;
@@ -157,6 +158,8 @@ class Database {
 		$ret = null;
 		if ($object = mysqli_fetch_object( $cur )) {
 			$ret = $object;
+		} else {
+            throw new \cjs\lib\exception\RecordNotFoundException();    
 		}
 		mysqli_free_result( $cur );
 		return $ret;

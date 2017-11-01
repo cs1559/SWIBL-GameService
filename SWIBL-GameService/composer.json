@@ -6,8 +6,8 @@
 	},
 	"autoload" : {
 		"psr-0" : {
-			"swibl\\" : "src/swibl",
-			"cjs\\lib\\" : "src/cjs/lib"
+			"swibl\\" : "src",
+			"cjs\\lib\\" : "src"
 		}
 	}
 }

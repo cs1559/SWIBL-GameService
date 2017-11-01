@@ -3,12 +3,29 @@ namespace cjs\lib;
 
 class Error {
     
+    var $method = null;
+    var $sourcefile = null;
     var $userMessage = null;
     var $internalMessage = null;
-    var $code = null;
     var $reference = null;
-    var $method = null;
+
     
+    /**
+     * @return the $sourcefile
+     */
+    public function getSourcefile()
+    {
+        return $this->sourcefile;
+    }
+
+    /**
+     * @param field_type $sourcefile
+     */
+    public function setSourcefile($sourcefile)
+    {
+        $this->sourcefile = $sourcefile;
+    }
+
     /**
      * @return the $method
      */

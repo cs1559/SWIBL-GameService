@@ -45,12 +45,15 @@ class Game extends \cjs\lib\BaseObject {
   var $location=null;    
   var $status = null;
   var $highlights = null;
-  var $properties = null;
-  var $divisionobj = null;
   var $enteredby = null;
   var $shortgame = 0;
+  var $updatedby = null;
+  
+  var $properties = null;
+  var $divisionobj = null;
   var $_homelogo = null;
   var $_awaylogo = null;
+
   
 	function setId($inParm) {
 		$this->id = $inParm;
@@ -239,6 +242,12 @@ class Game extends \cjs\lib\BaseObject {
  	}
  	function getAwayteamLogo() {
  		return $this->_awaylogo;
+ 	}
+ 	function setUpdatedBy($name) {
+ 	    $this->updatedby = $name;
+ 	}
+ 	function getUpdatedBy() {
+ 	    return $this->updatedby;
  	}
  	
 }

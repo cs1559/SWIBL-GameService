@@ -17,40 +17,40 @@ class GameHelper {
      * @return \TeamMS\Team
      */
     public static function bind($result) {
-       die('hello world');
-        print_r($result);
-        exit;
-        
+ 
         $fieldMap = array(
             "id" => "setId",
             "division_id" => "setDivisionId",
-            "season" => "setSeason"
+            "season" => "setSeason",
+            "game_date" => "setGameDate",
+            "hometeam_id" => "setHometeamId",
+            "awayteam_id" => "setAwayteamId",
+            "hometeam_score" => "setHometeamScore",
+            "awayteam_score" => "setAwayteamScore",
+            "gametime" => "setGameTime",
+            "hometeam_name" => "setHometeam",
+            "awayteam_name" => "setAwayteam",
+            "hometeam_in_league"  => "setHomeLeagueFlag",
+            "awayteam_in_league" => "setAwayLeagueFlag",
+            "conference_game" => "setConferenceGame",
+            "gamestatus" => "setGameStatus",
+            "location" => "setLocation",
+            "forfeit" => "setForfeit",
+            "enteredby" => "setEnteredBy",
+            "updatedby" => "setUpdatedBy",
+            "highlights" => "setHighlights"
         );
+        
+        // Convert result object to an array
+        $objVars = get_object_vars($result);
         
         $game = new Game();
         foreach ($fieldMap as $field => $method) {
-            if (isset($result[$field]))
-                $game->$method($result[$field]);
-                
+            if (isset($objVars[$field]))
+                $game->$method($objVars[$field]);         
         }
-        print_r($game);
-        exit;
+        $game->setObjectState(true);
         
-        
-        $game = new Game();
-        if (isset($result["id"])) 
-            $game->setId($result["id"]);
-      
-        if (isset($result["division_id"])) 
-            $game->setDivisionId($result["division_id"]);
-        
-        if (isset($result["season"])) 
-            $game->setSeason($result["season"]);
-       
-        if (isset($result["game_date"])) {
-            $game->setGameDate($result["game_date"]);
-        }
-         
         return $game;   
     }
     

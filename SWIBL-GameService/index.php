@@ -40,17 +40,40 @@ $app->get('/{id}', function (Request $request, Response $response) {
 
     $dao = new \swibl\GamesDAO();
     
-    $result = $dao->getGame($request->getAttribute('id'));
-    $game = \swibl\GameHelper::bind($result);
-    echo json_encode($game);
-
-    if($game) {
+    try {
+        $result = $dao->getGame($request->getAttribute('id'));
+        $game = \swibl\GameHelper::bind($result);
+        $svcresponse = new \cjs\lib\ServiceResponse();
+        $svcresponse->setCode(200);
+        $svcresponse->setData($game);
         $response->withHeader('Content-Type', 'application/json');
-        $response->write(json_encode($game));
-        
-    } else { throw new Exception('No records found');}
-    
-    return $response;
+        $response->write(json_encode($svcresponse));
+    } 
+    catch (\cjs\lib\exception\RecordNotFoundException $e) {
+        $svcresponse = new \cjs\lib\ServiceResponse();
+        $svcresponse->setCode(400);
+        $svcresponse->setMessage($e->getMessage());        
+        $response->withStatus(400);
+        $response->withHeader('Content-Type', 'application/json');
+        $response->write(json_encode($svcresponse));
+        return $response->withStatus(400);
+    } 
+    catch (Exception $e) {
+        $error = new \cjs\lib\Error();
+        $error->setSourcefile("file: " . $e->getFile() . " Line#: " . $e->getLine());
+        $error->setMethod("GET /{id}");
+        $error->setInternalMessage($e->getMessage());
+        $svcresponse = new \cjs\lib\ServiceResponse();
+        $svcresponse->setCode(400);
+        $svcresponse->setMessage($e->getMessage());
+        $svcresponse->addError($error);
+        $response->withStatus(400);
+        $response->withHeader('Content-Type', 'application/json');
+        $response->write(json_encode($svcresponse));
+        return $response->withStatus(400);
+    }
+
+    return $response->withStatus(200);
 });
     
     

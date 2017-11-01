@@ -6,10 +6,17 @@ class BaseObject {
     const VALID = 1;
     const INVALID = 0;
     
-    var $state = null;
+    var $objectstate = null;
    
-    public function getState() {
-        return $this->state;
+    public function getObjectState() {
+        if (is_null($this->objectstate)) {
+            return cjs\lib\BaseObject\VALID;
+        } else {
+            return $this->objectstate;
+        }
+    }
+    public function setObjectState($value) {
+        $this->objectstate = $value;
     }
     
 }
