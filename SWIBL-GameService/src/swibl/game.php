@@ -2,24 +2,15 @@
 namespace swibl;
 
 /**
- * @version		$Id: game.class.php 450 2012-12-18 10:21:13Z cs1559 $
- * @package 	JLeague
- * @subpackage	Objects
- * @copyright 	(C) 2006-2012 Chris Strieter, Firestorm Technologies, LLC
- * @license		GNU/GPL, see LICENSE.php
- */
-
-/**
- * JLGame represents a GAME event.  
+ * The Game object represents an individual game.  The game has some level of state based on whether or not
+ * the game has been played, scheduled, cancelled, etc. 
  * 
- * GAME STATUS:
- * 
+ * Valid Game Status values:
+ *    S = Scheduled  
  *    C = Completed
  *    R = Rained Out
  *    X = Cancelled
- *      = Suspended
- *    S = Scheduled  
- *
+ *    D = Suspended
  */
 
 class Game extends \cjs\lib\BaseObject {

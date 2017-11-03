@@ -1,9 +1,35 @@
 <?php
 namespace swibl;
 
-use cjs\lib\Factory;
+use cjs\lib\Database;
+
+// use cjs\lib\Factory;
 
 class GamesDAO {
+    
+    private $database = null;
+
+    /**
+     * Private constructor to ensure that the object cannot be instantiated by a client.
+     */
+    private function __construct() {
+    }
+    
+    static function getInstance(Database $db) {
+        static $instance;
+        if (!is_object( $instance )) {
+            $instance = new GamesDAO();
+        }
+        $instance->setDatabase($db);
+        return $instance;
+    }
+    
+    function getDatabase() {
+        return $this->database;
+    }
+    function setDatabase($db) {
+        $this->database = $db;
+    }
     
     /**
      * This function will return an individual game.
@@ -14,7 +40,7 @@ class GamesDAO {
      */
     function getGame($id) {
         
-        $db = &\cjs\lib\Factory::getDatabase();
+        $db = $this->getDatabase();
         $db->setQuery("select * from joom_jleague_scores where id = " . $id);
         try {
             $result = $db->loadObject(); 
@@ -33,10 +59,10 @@ class GamesDAO {
      */
     function getGameSchedule($teamid, $season) {
         
-        $db = \cjs\lib\Factory::getDatabase();
+        $db = $this->getDatabase();
         $db->setQuery("select * from joom_jleague_scores where season = " . $season . " and (awayteam_id = " . $teamid . " or hometeam_id = " . $teamid . ")");
         try {
-        $games = $db->loadObjectList();
+            $games = $db->loadObjectList();
         } catch (\Exception $e) {
             throw $e;
         }

@@ -3,8 +3,11 @@ namespace cjs\lib;
 
 use Exception;
 
-
-
+/**
+ * 
+ * @author Admin
+ *
+ */
 class Database {
 	
 	var $_connection = null;
@@ -197,7 +200,12 @@ class Database {
 			}
 		}
 		mysqli_free_result( $cur );
-		return $array;
+		if (count($array) > 0) {
+		  return $array;
+		} else {
+		  throw new \cjs\lib\exception\RecordNotFoundException();    
+		}
+		
 	}
 	
 	

@@ -6,6 +6,9 @@
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use swibl\GameBuilder;
+use swibl\GameServiceResponse;
+use swibl\GameService;
 
 require 'vendor/autoload.php';
 
@@ -37,46 +40,55 @@ $app = new \Slim\App($config);
 
 
 $app->get('/{id}', function (Request $request, Response $response) {
+ 
+//     $body = $request->getBody()->getContents();
+//     echo "body = " . $body;
+//     exit;
 
-    $dao = new \swibl\GamesDAO();
-    
+    $service = GameService::getInstance();    
+    if ($service->isLogEnabled()) {
+        $logger = $service->getLogger();
+        $logger->info("GET /" . $request->getAttribute('id') );
+    }
+    $dao = \swibl\GamesDAO::getInstance($service->getDatabase());
+
+ 
     try {
         $result = $dao->getGame($request->getAttribute('id'));
-        $game = \swibl\GameHelper::bind($result);
-        $svcresponse = new \cjs\lib\ServiceResponse();
+        $builder = new GameBuilder();
+        $game = $builder->build($result);
+        
+        $svcresponse = new GameServiceResponse($game);
         $svcresponse->setCode(200);
-        $svcresponse->setData($game);
-        $response->withHeader('Content-Type', 'application/json');
         $response->write(json_encode($svcresponse));
     } 
     catch (\cjs\lib\exception\RecordNotFoundException $e) {
-        $svcresponse = new \cjs\lib\ServiceResponse();
+        $svcresponse = new GameServiceResponse();
         $svcresponse->setCode(400);
         $svcresponse->setMessage($e->getMessage());        
-        $response->withStatus(400);
-        $response->withHeader('Content-Type', 'application/json');
         $response->write(json_encode($svcresponse));
-        return $response->withStatus(400);
+        return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
     } 
     catch (Exception $e) {
         $error = new \cjs\lib\Error();
         $error->setSourcefile("file: " . $e->getFile() . " Line#: " . $e->getLine());
         $error->setMethod("GET /{id}");
         $error->setInternalMessage($e->getMessage());
-        $svcresponse = new \cjs\lib\ServiceResponse();
+        $svcresponse = new GameServiceResponse();
         $svcresponse->setCode(400);
         $svcresponse->setMessage($e->getMessage());
         $svcresponse->addError($error);
-        $response->withStatus(400);
-        $response->withHeader('Content-Type', 'application/json');
         $response->write(json_encode($svcresponse));
-        return $response->withStatus(400);
+        return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
     }
 
-    return $response->withStatus(200);
+    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
 });
     
     
+/**
+ * This ROUTE will retrieve a game schedule for a team and a specific season
+ */
 $app->get('/schedule/{teamid}', function (Request $request, Response $response, $args) {
         
         
@@ -87,50 +99,53 @@ $app->get('/schedule/{teamid}', function (Request $request, Response $response, 
         if (isset($params["season"])){
             $season = $params["season"];
         } else {
-            $svcresponse = new cjs\lib\ServiceResponse();
-            $error = new cjs\lib\Error();
-            $error->setReference("URL=".$uri);
-            $error->setUserMessage("Missing key parameter - NO SEASON ID provided");
-            $error->setMethod("index.php");
-            $svcresponse->addError($error);
-            $body = $response->getBody();
-            $body->write(json_encode($svcresponse));
-            return $response->withStatus(500)->withHeader('Content-type', 'application/json')->withBody($body);
+            $svcresponse = new \cjs\lib\ServiceResponse();
+            $svcresponse->setCode(400);
+            $svcresponse->setMessage("Season ID is missing from the request - " . "GET /schedule/{teamid}");
+            $response->write(json_encode($svcresponse));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
         
         $teamid = $request->getAttribute("teamid");
         $dao = new swibl\GamesDAO();
-        $games = $dao->getGameSchedule($teamid, $season);
-        
-//         $db = cjs\lib\Factory::getDatabase();
-//         $db->setQuery("select * from joom_jleague_scores where season = " . $season . " and (awayteam_id = " . $teamid . " or hometeam_id = " . $teamid . ")");
-//         $games = $db->loadObjectList();
-        
-        if($games) {
+        try {
+            $results = $dao->getGameSchedule($teamid, $season);
+            $games = \swibl\GameHelper::bindArray($results);
+            $svcresponse = new \cjs\lib\ServiceResponse();
+            $svcresponse->setCode(200);
+            $svcresponse->setData($games);
             $response->withHeader('Content-Type', 'application/json');
-            $response->write(json_encode($games));
-            
-        } else { throw new Exception('No records found');}
+            $response->write(json_encode($svcresponse));
+        } 
+        catch (\cjs\lib\exception\RecordNotFoundException $e) {
+            $svcresponse = new \cjs\lib\ServiceResponse();
+            $svcresponse->setCode(400);
+            $svcresponse->setMessage($e->getMessage());
+            $response->write(json_encode($svcresponse));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
+        catch (Exception $e) {
+            $error = new \cjs\lib\Error();
+            $error->setSourcefile("file: " . $e->getFile() . " Line#: " . $e->getLine());
+            $error->setMethod("GET /{id}");
+            $error->setInternalMessage($e->getMessage());
+            $svcresponse = new \cjs\lib\ServiceResponse();
+            $svcresponse->setCode(400);
+            $svcresponse->setMessage($e->getMessage());
+            $svcresponse->addError($error);
+            $response->write(json_encode($svcresponse));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
         
-        return $response;
-    });
-    
-    $app->get('/{id}?upcoming={games}', function (Request $request, Response $response) {
- 
-        echo "getting upcoiming gameS";
-        die;
-//         $dao = new swibl\GamesDAO();
-//         $game = $dao->getGame($request->getAttribute('id'));
-        
-        if($game) {
-            $response->withHeader('Content-Type', 'application/json');
-            $response->write(json_encode($game));
-            
-        } else { throw new Exception('No records found');}
-        
-        return $response;
-    });
-        
-    
-    
+        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+});
+
+
+$app->put('/update/{id}', function (Request $request, Response $response) {
+    $id = $request->getAttribute("id");
+    $body = $request->getBody();
+    $content = $body->getContents();
+    print_r($content);
+});
+
 $app->run();
