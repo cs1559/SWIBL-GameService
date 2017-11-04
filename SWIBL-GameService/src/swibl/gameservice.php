@@ -89,9 +89,21 @@ class GameService extends \cjs\lib\Application {
         return $this->logger;
     }
     
+    /**
+     * Method to indicate if logging is on for the service.
+     * @return boolean
+     */
     public function isLogEnabled() {
         $config = $this->config;    
         return $config->getPropertyValue("log.enabled");
+    }
+    
+    /**
+     * 
+     */
+    public function isAuthenticationEnabled() {
+        $config = $this->config;
+        return $config->getPropertyValue("authentication.enabled");
     }
     
     

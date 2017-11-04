@@ -23,7 +23,7 @@ class GameServiceResponse extends ServiceResponse {
      * 
      * @param Game $content
      */
-    public function __construct(Game $content)
+    public function __construct(Game $content = null)
     {
         $this->data = $content;
     }

@@ -1,1 +1,16 @@
 hello world
+[03/Nov/2017:22:55:50] hello world
+[04/Nov/2017:03:05:15] Attempting to update record 18696
+[04/Nov/2017:03:05:15] after date conversion 18696
+[04/Nov/2017:03:05:55] Attempting to update record 18696
+[04/Nov/2017:03:05:55] after date conversion 18696
+[04/Nov/2017:03:05:55] After setting query
+[04/Nov/2017:03:05:55] update joom_jleague_scores set  division_id = "194",  season = "20",  game_date = date("18-2017-04"),  hometeam_id = "696",  awayteam_id = "697",  hometeam_score = "10",  awayteam_score = "4",  forfeit = "N",  conference_game = "Y",  hometeam_name = "",  awayteam_name = "",  hometeam_in_league = "",  awayteam_in_league = "",  location = "Bethalto Field of Dreams",  highlights = "Diamond 1",  gametime = "",  gamestatus = "",  shortgame = "0",  updatedby = "rspurgeon@fergflor.org",  dateupdated = NOW()  where id = 18696
+[04/Nov/2017:03:06:26] Attempting to update record 18696
+[04/Nov/2017:03:06:26] after date conversion 18696
+[04/Nov/2017:03:06:26] After setting query
+[04/Nov/2017:03:06:26] update joom_jleague_scores set  division_id = "194",  season = "20",  game_date = date("18-2017-04"),  hometeam_id = "696",  awayteam_id = "697",  hometeam_score = "10",  awayteam_score = "4",  forfeit = "N",  conference_game = "Y",  hometeam_name = "",  awayteam_name = "",  hometeam_in_league = "",  awayteam_in_league = "",  location = "Bethalto Field of Dreams",  highlights = "Diamond 1",  gametime = "",  gamestatus = "",  shortgame = "0",  updatedby = "rspurgeon@fergflor.org",  dateupdated = NOW()  where id = 18696
+[04/Nov/2017:03:10:04] Attempting to update record 18696
+[04/Nov/2017:03:10:04] after date conversion 18696
+[04/Nov/2017:03:10:04] After setting query
+[04/Nov/2017:03:10:04] update joom_jleague_scores set  division_id = "194",  season = "20",  game_date = date("18-2017-04"),  hometeam_id = "696",  awayteam_id = "697",  hometeam_score = "10",  awayteam_score = "4",  forfeit = "N",  conference_game = "Y",  hometeam_name = "",  awayteam_name = "",  hometeam_in_league = "",  awayteam_in_league = "",  location = "Bethalto Field of Dreams",  highlights = "Diamond 1",  gametime = "",  gamestatus = "",  shortgame = "0",  updatedby = "rspurgeon@fergflor.org",  dateupdated = NOW()  where id = 18696

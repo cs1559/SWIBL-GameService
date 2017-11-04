@@ -2,6 +2,8 @@
 namespace swibl;
 
 use cjs\lib\Database;
+use cjs\lib\DateUtil;
+use Exception;
 
 // use cjs\lib\Factory;
 
@@ -69,4 +71,61 @@ class GamesDAO {
         return $games;
     }
 
+    /**
+     * 
+     */
+    function update(Game $obj) {
+        $service = GameService::getInstance();
+        $logger = $service->getLogger();
+        $logEnabled = $service->isLogEnabled();
+        if ($logEnabled) {
+            $logger->info("Attempting to update record " . $obj->getId());
+        }
+        
+        $db = $this->getDatabase();
+        $newGameDate = DateUtil::dateconvert($obj->getGameDate(),1);
+        if ($logEnabled) {
+            $logger->info("after date conversion " . $obj->getId());
+        }
+        $query = 'update joom_jleague_scores set '
+            . ' division_id = "' . $obj->getDivisionId(). '", '
+            . ' season = "' . $obj->getSeason(). '", '
+            . ' game_date = date("' . $newGameDate. '"), '
+            . ' hometeam_id = "' . $obj->getHometeamId(). '", '
+            . ' awayteam_id = "' . $obj->getAwayteamId(). '", '
+            . ' hometeam_score = "' . $obj->getHometeamScore(). '", '
+            . ' awayteam_score = "' . $obj->getAwayteamScore(). '", '
+            . ' forfeit = "' . $obj->getForfeit(). '", '
+            . ' conference_game = "' . $obj->getConferenceGame(). '", '
+            . ' hometeam_name = "' . $obj->getHometeam(). '", '
+            . ' awayteam_name = "' . $obj->getAwayteam(). '", '
+            . ' hometeam_in_league = "' . $obj->getHomeLeagueFlag(). '", '
+            . ' awayteam_in_league = "' . $obj->getAwayLeagueFlag(). '", '
+//             . ' properties = "' . $obj->getFormattedProperties(). '", '
+            . ' location = "' . $obj->getLocation(). '", '
+            . ' highlights = "' . $obj->getHighlights(). '", '
+            . ' gametime = "' . $obj->getGameTime(). '", '
+            . ' gamestatus = "' . $obj->getGameStatus(). '", '
+            . ' shortgame = "' . $obj->getShortgame(). '", '
+            . ' updatedby = "' . $obj->getUpdatedBy() . '", '
+            . ' dateupdated = NOW() '
+            . ' where id = ' . $obj->getId();
+          
+            $logger->info("After setting query");
+            $logger->info($query);
+
+            
+            if (!$db->query($query)) {
+                if ($logEnabled) {
+                    $logger->error($db->getErrorMsg());
+                }
+                throw new Exception($db->getErrorMsg());
+            } else {
+                if ($logEnabled) {
+                    $logger->info("Record ID " . $obj->getId() . " has been updated");
+                }
+                return true;
+            }	                                                                                              
+    }
+    
 }

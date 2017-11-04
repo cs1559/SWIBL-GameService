@@ -135,7 +135,7 @@ class Database {
 		if ($sql != null) {
 			$this->_sql = $sql;
 		}
-		$this->_sql = str_replace("#_", $this->_prefix,$this->_sql);
+// 		$this->_sql = str_replace("#_", $this->_prefix,$this->_sql);
 
 		$cur = mysqli_query( $this->_connection, $this->_sql );
 		if (!$cur) {
