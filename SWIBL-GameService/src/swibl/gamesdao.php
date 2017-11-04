@@ -83,7 +83,7 @@ class GamesDAO {
         }
         
         $db = $this->getDatabase();
-        $newGameDate = DateUtil::dateconvert($obj->getGameDate(),1);
+        $newGameDate = DateUtil::dateConvertForInput($obj->getGameDate());
         if ($logEnabled) {
             $logger->info("after date conversion " . $obj->getId());
         }

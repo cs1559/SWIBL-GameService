@@ -26,6 +26,40 @@ $jsonGame = file_get_contents("game.json");
 $obj = json_decode($jsonGame);
  $builder = new swibl\GameBuilder();
  $game = $builder->build($obj);
+ print_r($game);
+ exit;
+ 
+   $chkdate = "2018-01-23";
+  
+  $date = DateUtil::dateConvertForInput($chkdate);
+  echo "\r\n";
+  echo $date;
+  $date = DateUtil::dateConvertForOutput($chkdate);
+  echo "\r\n";
+  echo $date;
+  exit;
+  
+//   switch (true) {
+//       case preg_match('/\d{4}-\d{2}-\d{2}/',$chkdate):
+//           echo "Correct Format";
+//       case preg_match('/\d{2}-\d{2}-\d{4}/',$chkdate):
+//           echo "incorrect format";
+//       default:
+//           echo "default";
+//   }
+  
+//  if(preg_match('/\d{4}-\d{2}-\d{2}/',$chkdate)){
+//      echo "yyyy-mm-dd format";
+//  } elseif (preg_match('/\d{2}-\d{2}-\d{4}/',$chkdate)) {
+//      echo "mm-dd-yyyy format";
+//  }
+ 
+//  echo $game->getGameDate();
+//  echo $game->getGameTime();
+//  echo date('Y-m-d H:i:s',strtotime($game->getGameDate()));
+ exit;
+ 
+ 
  $dao = GamesDAO::getInstance($db);
  $dao->update($game);
  print_r($game);
