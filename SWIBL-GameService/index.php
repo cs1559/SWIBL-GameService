@@ -26,12 +26,12 @@ if (file_exists('bootstrap.php'))
  */
 /*
  * ROUTES
- * 
+ *
  * /{id}
  * /schedule/{teamid}?season=
  * /update/{id}
  * /dashboard/
- * 
+ *
  */
 
 $config = [
@@ -45,18 +45,24 @@ $app = new \Slim\App($config);
 $app->add(new swibl\RequestAuthorizer());
 
 $app->get('/{id}', function (Request $request, Response $response) {
- 
-//     $body = $request->getBody()->getContents();
-//     echo "body = " . $body;
-//     exit;
-
-    $service = GameService::getInstance();    
-
+    
+    //     $body = $request->getBody()->getContents();
+    //     echo "body = " . $body;
+    //     exit;
+    
+    
+    $service = GameService::getInstance();
+    
     if ($service->isLogEnabled()) {
         $logger = $service->getLogger();
         $logger->info("GET /" . $request->getAttribute('id') );
     }
     $dao = \swibl\GamesDAO::getInstance($service->getDatabase());
+   
+    $headers = $request->getHeaders();
+    foreach ($headers as $name => $values) {
+         $logger->write($name . ": " . implode(", ", $values));
+     }
 
     try {
         $result = $dao->getGame($request->getAttribute('id'));
@@ -66,14 +72,14 @@ $app->get('/{id}', function (Request $request, Response $response) {
         $svcresponse = new GameServiceResponse($game);
         $svcresponse->setCode(200);
         $response->write(json_encode($svcresponse));
-    } 
+    }
     catch (\cjs\lib\exception\RecordNotFoundException $e) {
         $svcresponse = new GameServiceResponse();
         $svcresponse->setCode(400);
-        $svcresponse->setMessage($e->getMessage());        
+        $svcresponse->setMessage($e->getMessage());
         $response->write(json_encode($svcresponse));
         return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
-    } 
+    }
     catch (Exception $e) {
         $error = new \cjs\lib\Error();
         $error->setSourcefile("file: " . $e->getFile() . " Line#: " . $e->getLine());
@@ -86,21 +92,21 @@ $app->get('/{id}', function (Request $request, Response $response) {
         $response->write(json_encode($svcresponse));
         return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
     }
-
+    
     return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
 });
     
     
-/**
- * This ROUTE will retrieve a game schedule for a team and a specific season
- */
-$app->get('/schedule/{teamid}', function (Request $request, Response $response, $args) {
+    /**
+     * This ROUTE will retrieve a game schedule for a team and a specific season
+     */
+    $app->get('/schedule/{teamid}', function (Request $request, Response $response, $args) {
         
         
         $uri = $request->getUri();
         
         $params = $request->getQueryParams();
-
+        
         if (isset($params["season"])){
             $season = $params["season"];
         } else {
@@ -121,7 +127,7 @@ $app->get('/schedule/{teamid}', function (Request $request, Response $response, 
             $svcresponse->setData($games);
             $response->withHeader('Content-Type', 'application/json');
             $response->write(json_encode($svcresponse));
-        } 
+        }
         catch (\cjs\lib\exception\RecordNotFoundException $e) {
             $svcresponse = new GameServiceResponse();
             $svcresponse->setCode(400);
@@ -143,43 +149,123 @@ $app->get('/schedule/{teamid}', function (Request $request, Response $response, 
         }
         
         return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-});
-
-
-$app->put('/{id}', function (Request $request, Response $response) {
-    
-    $service = GameService::getInstance();    
-    
-    $id = $request->getAttribute("id");
-    $body = $request->getBody();
-    $content = $body->getContents();
-    
-    $content2 = $request->getParsedBody();
-    if ($service->isLogEnabled()) {
-        $logger = $service->getLogger();
-        $logger->info("PUT /" . $content );
-    }
-    
-    $dao = \swibl\GamesDAO::getInstance($service->getDatabase());
-    try {
-        $builder = new GameBuilder();
-        $logger->write( $content);
-        $game = $builder->build(json_decode($content));
-        $dao->update($game);
-    } 
-    catch (Exception $e) {
-        if ($service->isLogEnabled()) {
-            $logger = $service->getLogger();
-            $logger->write("Exception occured");
-            $logger->info("PUT /" . $e->getTraceAsString() );
-        }
-        $svcresponse = new GameServiceResponse();
-        $svcresponse->setCode(200);
-        $svcresponse->setMessage("WITHIN UPDATE ROUTINE");
-        $response->write(json_encode($svcresponse));
-    }
-    
-    return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-});
-
-$app->run();
+    });
+        
+        
+        $app->put('/{id}', function (Request $request, Response $response) {
+            
+            $service = GameService::getInstance();
+            
+            $id = $request->getAttribute("id");
+            $body = $request->getBody();
+            $content = $body->getContents();
+            
+            $content2 = $request->getParsedBody();
+            if ($service->isLogEnabled()) {
+                $logger = $service->getLogger();
+                $logger->info("PUT /" . $content );
+            }
+            
+            $dao = \swibl\GamesDAO::getInstance($service->getDatabase());
+            try {
+                $builder = new GameBuilder();
+                $logger->write( $content);
+                $game = $builder->build(json_decode($content));
+                $dao->update($game);
+            }
+            catch (Exception $e) {
+                if ($service->isLogEnabled()) {
+                    $logger = $service->getLogger();
+                    $logger->write("Exception occured");
+                    $logger->info("PUT /" . $e->getTraceAsString() );
+                }
+                $svcresponse = new GameServiceResponse();
+                $svcresponse->setCode(200);
+                $svcresponse->setMessage("WITHIN UPDATE ROUTINE");
+                $response->write(json_encode($svcresponse));
+            }
+            
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        });
+            
+            
+            $app->post('/', function (Request $request, Response $response) {
+                
+                /*
+                 $service = GameService::getInstance();
+                 
+                 $id = $request->getAttribute("id");
+                 $body = $request->getBody();
+                 $content = $body->getContents();
+                 
+                 $content2 = $request->getParsedBody();
+                 if ($service->isLogEnabled()) {
+                 $logger = $service->getLogger();
+                 $logger->info("PUT /" . $content );
+                 }
+                 
+                 $dao = \swibl\GamesDAO::getInstance($service->getDatabase());
+                 try {
+                 $builder = new GameBuilder();
+                 $logger->write( $content);
+                 $game = $builder->build(json_decode($content));
+                 $dao->update($game);
+                 }
+                 catch (Exception $e) {
+                 if ($service->isLogEnabled()) {
+                 $logger = $service->getLogger();
+                 $logger->write("Exception occured");
+                 $logger->info("PUT /" . $e->getTraceAsString() );
+                 }
+                 $svcresponse = new GameServiceResponse();
+                 $svcresponse->setCode(200);
+                 $svcresponse->setMessage("WITHIN UPDATE ROUTINE");
+                 $response->write(json_encode($svcresponse));
+                 }
+                 
+                 return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+                 */
+            });
+                
+                $app->delete('/{id}', function (Request $request, Response $response) {
+                    
+                    /*
+                     $service = GameService::getInstance();
+                     
+                     $id = $request->getAttribute("id");
+                     $body = $request->getBody();
+                     $content = $body->getContents();
+                     
+                     $content2 = $request->getParsedBody();
+                     if ($service->isLogEnabled()) {
+                     $logger = $service->getLogger();
+                     $logger->info("PUT /" . $content );
+                     }
+                     
+                     $dao = \swibl\GamesDAO::getInstance($service->getDatabase());
+                     try {
+                     $builder = new GameBuilder();
+                     $logger->write( $content);
+                     $game = $builder->build(json_decode($content));
+                     $dao->update($game);
+                     }
+                     catch (Exception $e) {
+                     if ($service->isLogEnabled()) {
+                     $logger = $service->getLogger();
+                     $logger->write("Exception occured");
+                     $logger->info("PUT /" . $e->getTraceAsString() );
+                     }
+                     $svcresponse = new GameServiceResponse();
+                     $svcresponse->setCode(200);
+                     $svcresponse->setMessage("WITHIN UPDATE ROUTINE");
+                     $response->write(json_encode($svcresponse));
+                     }
+                     
+                     return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+                     */
+                });
+                    
+                    $app->run();
+                    
+                    
+                    
