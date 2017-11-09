@@ -56,32 +56,52 @@ class GameService extends \cjs\lib\Application {
         // Create the logger
         $logfile = $this->config->getPropertyValue("log.file");
         $logger = FileLogger::getInstance($logfile);
+        $logger->setLevel($this->config->getPropertyValue("log.level"));
         $this->logger = $logger;
     }
     
+    /**
+     * REturn the Version  of the service.
+     * {@inheritDoc}
+     * @see \cjs\lib\Application::getVersion()
+     */
     public function getVersion()
     {
         return "0.1";
     }
 
+    /**
+     * Sets the database object used by objects to retreive game data.
+     * @param unknown $db
+     */
     private function setDatabase($db) {
         $this->database = $db;
     }
+    /*
+     * REturns a database instance for this service.
+     */
     public function getDatabase()
     {
         return $this->database;
     }
 
+    /*
+     * REturn the name of the Service.
+     */
     public function getName()
     {
         return "GameService";
     }
 
+    /**
+     * REturns an instance of the configuration
+     */
     public function getConfig()
     {
         return $this->config;
     }
     /*  
+     * REturns the logger for the service.
      * @returns FileLogger
      * */
     public function getLogger()
@@ -99,7 +119,7 @@ class GameService extends \cjs\lib\Application {
     }
     
     /**
-     * 
+     * Method to indicate if API authentication is enabled for this service.
      */
     public function isAuthenticationEnabled() {
         $config = $this->config;
