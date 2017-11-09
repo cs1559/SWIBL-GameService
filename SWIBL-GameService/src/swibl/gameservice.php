@@ -57,6 +57,7 @@ class GameService extends \cjs\lib\Application {
         $logfile = $this->config->getPropertyValue("log.file");
         $logger = FileLogger::getInstance($logfile);
         $logger->setLevel($this->config->getPropertyValue("log.level"));
+        $logger->setEnabled($this->config->getPropertyValue("log.enabled"));
         $this->logger = $logger;
     }
     
