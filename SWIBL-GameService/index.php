@@ -203,7 +203,7 @@ $app->add(new swibl\RequestAuthorizer());
             $game->setId($newid);
             $svcresponse = new GameServiceResponse($game);
             $svcresponse->setCode(200);
-            $svcresponse->setMessage("Record" . $newid . " has been created");
+            $svcresponse->setMessage("Record " . $newid . " has been created");
             $response->write(json_encode($svcresponse));
         }
         catch (Exception $e) {
@@ -223,7 +223,6 @@ $app->add(new swibl\RequestAuthorizer());
      */
     $app->delete('/{id}', function (Request $request, Response $response) {
                     
-            /*
              $service = GameService::getInstance();
              
              $id = $request->getAttribute("id");
@@ -231,33 +230,28 @@ $app->add(new swibl\RequestAuthorizer());
              $content = $body->getContents();
              
              $content2 = $request->getParsedBody();
-             if ($service->isLogEnabled()) {
+
              $logger = $service->getLogger();
-             $logger->info("PUT /" . $content );
-             }
-             
+             $logger->info("DELETE /" . $request->getAttribute('id') );
              $dao = \swibl\GamesDAO::getInstance($service->getDatabase());
              try {
-             $builder = new GameBuilder();
-             $logger->write( $content);
-             $game = $builder->build(json_decode($content));
-             $dao->update($game);
+                $dao->delete($id);
+                $svcresponse = new GameServiceResponse();
+                $svcresponse->setCode(200);
+                $svcresponse->setMessage("Record " . $id . " has been successfully deleted");
+                $response->write(json_encode($svcresponse));
              }
              catch (Exception $e) {
-             if ($service->isLogEnabled()) {
-             $logger = $service->getLogger();
-             $logger->write("Exception occured");
-             $logger->info("PUT /" . $e->getTraceAsString() );
-             }
-             $svcresponse = new GameServiceResponse();
-             $svcresponse->setCode(200);
-             $svcresponse->setMessage("WITHIN UPDATE ROUTINE");
-             $response->write(json_encode($svcresponse));
+                 $logger->info("DELETE /" . $e->getTraceAsString() );
+                 $svcresponse = new GameServiceResponse();
+                 $svcresponse->setCode(400);
+                 $svcresponse->setMessage($e->getMessage());
+                 $response->write(json_encode($svcresponse));
+                 return $response->withStatus(400)->withHeader('Content-Type', 'application/json');  
              }
              
              return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-             */
-        });
+            });
                     
 $app->run();
                     
