@@ -34,6 +34,68 @@ class GamesDAO {
     }
     
     /**
+     * This function will INSERT a game object into the games table.
+     */
+    function insert(Game $obj) {
+        $service = GameService::getInstance();
+        $logger = $service->getLogger();
+        
+        // Throw an exception if the game object ID has a value other than 0 (zero)
+        if ($obj->getId()) {
+            throw new \Exception("Insert not allowed.  ID already populated");
+        }
+        
+        $logger->debug("Attempting to INSERT record " . $obj->getId());
+        
+        $db = $this->getDatabase();
+        $newGameDate = DateUtil::dateConvertForInput($obj->getGameDate());
+        $logger->debug("after date conversion " . $obj->getId());
+        
+        $query = 'INSERT INTO joom_jleague_scores (id, division_id, season, game_date, hometeam_id, awayteam_id, '
+            . 'hometeam_score,awayteam_score,forfeit,conference_game,hometeam_name,awayteam_name,hometeam_in_league,awayteam_in_league,'
+            . 'properties,location,highlights,gametime,gamestatus, shortgame, enteredby, updatedby, dateupdated)'
+            . ' VALUES (0,'
+            . '"' . $obj->getDivisionId(). '",'
+            . '"' . $obj->getSeason() . '",'
+            . ' date("' . $newGameDate. '"), '
+            . '"' . $obj->getHometeamId() . '",'
+            . '"' . $obj->getAwayteamId() . '",'
+            . '"' . $obj->getHometeamScore() . '",'
+            . '"' . $obj->getAwayteamScore() . '",'
+            . '"' . $obj->getForfeit() . '",'
+            . '"' . $obj->getConferenceGame() . '",'
+            . '"' . $obj->getHometeam() . '",'
+            . '"' . $obj->getAwayteam() . '",'
+            . '"' . $obj->getHomeLeagueFlag() . '",'
+            . '"' . $obj->getAwayLeagueFlag() . '",'
+                . '"",'   // ' . $obj->getFormattedProperties() . '
+            . '"' . $obj->getLocation() . '",'
+            . '"' . $obj->getHighlights() . '",'
+            . '"' . $obj->getGameTime() . '",'
+            . '"' . $obj->getGameStatus() . '",'
+            . '"' . $obj->getShortgame() . '",'
+            . '"' . $obj->getUpdatedBy() . '",'         // Entered by
+            . '"' . $obj->getUpdatedBy() . '",'         // Updated by
+            . 'NOW()'
+            .  ')';
+                                                                                                            
+      
+            $logger->debug($query);
+            
+            
+            if (!$db->query($query)) {
+                $logger->error($db->getErrorMsg());
+                throw new Exception($db->getErrorMsg());
+            } else {
+                $logger->info("Record ID " . $db->insertId() . " has been INSERTED");
+                return $db->insertId();
+            }
+            
+ 
+    }
+    
+    
+    /**
      * This function will return an individual game.
      * 
      * @param unknown $id 
@@ -52,6 +114,35 @@ class GamesDAO {
         return $result;
     }
     
+    
+    /**
+     * This function will return an individual game.
+     *
+     * @param unknown $id
+     * @throws Exception
+     * @return array 
+     */
+    function delete($id) {
+        
+        $service = GameService::getInstance();
+        $logger = $service->getLogger();
+        
+        $logger->debug("Attempting to DELETE record " . $id);
+        
+        $db = $this->getDatabase();
+        $db->setQuery("delete from joom_jleague_scores where id = " . $id);
+        try {
+            $result = $db->query();
+            $logger->info("Total records deleted is " . $db->getAffectedRows());
+            if ($db->getAffectedRows() == 0) {
+                throw new Exception("NO RECORDS DELETED");
+            }
+        } catch (\Exception $e) {
+            $logger->error($db->getErrorMsg());
+            throw $e;
+        }
+        return true;
+    }
     /**
      * This function will return the game schedule for a team / season.
      * @param unknown $teamid
@@ -72,21 +163,17 @@ class GamesDAO {
     }
 
     /**
-     * 
+     *  This function will update a game record.
      */
     function update(Game $obj) {
         $service = GameService::getInstance();
         $logger = $service->getLogger();
-        $logEnabled = $service->isLogEnabled();
-        if ($logEnabled) {
-            $logger->info("Attempting to update record " . $obj->getId());
-        }
+        $logger->debug("Attempting to update record " . $obj->getId());
         
         $db = $this->getDatabase();
         $newGameDate = DateUtil::dateConvertForInput($obj->getGameDate());
-        if ($logEnabled) {
-            $logger->info("after date conversion " . $obj->getId());
-        }
+        $logger->debug("after date conversion " . $obj->getId());
+        
         $query = 'update joom_jleague_scores set '
             . ' division_id = "' . $obj->getDivisionId(). '", '
             . ' season = "' . $obj->getSeason(). '", '
@@ -111,19 +198,14 @@ class GamesDAO {
             . ' dateupdated = NOW() '
             . ' where id = ' . $obj->getId();
           
-            $logger->info("After setting query");
-            $logger->info($query);
+            $logger->debug($query);
 
             
             if (!$db->query($query)) {
-                if ($logEnabled) {
-                    $logger->error($db->getErrorMsg());
-                }
+                $logger->error($db->getErrorMsg());
                 throw new Exception($db->getErrorMsg());
             } else {
-                if ($logEnabled) {
-                    $logger->info("Record ID " . $obj->getId() . " has been updated");
-                }
+                $logger->info("Record ID " . $obj->getId() . " has been updated");
                 return true;
             }	                                                                                              
     }
