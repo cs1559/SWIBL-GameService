@@ -24,7 +24,7 @@ class FileLogger extends Logger {
     }
     public function warning($msg)
     {
-        $this->write($msg);
+        $this->write("[WARNING] " . $msg);
     }
 
     public function critcal($msg)
@@ -34,7 +34,7 @@ class FileLogger extends Logger {
 
     public function error($msg)
     {
-        $this->write($msg);
+        $this->write("[ERROR] " . $msg);
     }
 
     public function write($msg)
@@ -55,12 +55,15 @@ class FileLogger extends Logger {
     }
     
     public function debug($msg) {
-        $this->write("[DEBUG] " . $msg);
+        if ($this->getLevel() > 2) {
+            $this->write("[DEBUG] " . $msg);
+        }
+        return;
     }
 
     public function info($msg)
     {
-        $this->write($msg);
+        $this->write("[INFO] " . $msg);
     }
 
     
