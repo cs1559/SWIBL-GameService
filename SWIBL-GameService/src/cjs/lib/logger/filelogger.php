@@ -39,6 +39,9 @@ class FileLogger extends Logger {
 
     public function write($msg)
     {
+        if (!$this->isEnabled()) {
+            return;
+        }
         $time = @date('[d/M/Y:H:i:s]');
         
         // open file
@@ -49,6 +52,10 @@ class FileLogger extends Logger {
         
         // close file
         fclose($fd);
+    }
+    
+    public function debug($msg) {
+        $this->write("[DEBUG] " . $msg);
     }
 
     public function info($msg)
