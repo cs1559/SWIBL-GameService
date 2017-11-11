@@ -11,6 +11,14 @@ abstract class ServiceResponse implements \JsonSerializable {
     protected $data = null;
     protected $errors = array();
     
+    public function __construct($code, $message)
+    {
+        $this->setCode($code);
+        $this->setMessage($message);
+        $this->data = $data;
+    }
+    
+    
     /**
      * @return the $code
      */
