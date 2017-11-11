@@ -153,7 +153,7 @@ class GamesDAO {
     function getGameSchedule($teamid, $season) {
         
         $db = $this->getDatabase();
-        $db->setQuery("select * from joom_jleague_scores where season = " . $season . " and (awayteam_id = " . $teamid . " or hometeam_id = " . $teamid . ")");
+        $db->setQuery("select * from joom_jleague_scores where season = " . $season . " and (awayteam_id = " . $teamid . " or hometeam_id = " . $teamid . ") order by game_date");
         try {
             $games = $db->loadObjectList();
         } catch (\Exception $e) {
