@@ -23,15 +23,24 @@ class GameServiceResponse extends ServiceResponse {
      * 
      * @param Game $content
      */
-    public function __construct(Game $content = null)
+    public function __construct($code, $message, Game $content = null)
     {
+        $this->setCode($code);
+        $this->setMessage($message);
         $this->data = $content;
+    }
+    
+    public static function getInstance($code, $message) {
+        return new GameServiceResponse($code, $message);
     }
 
     public function getData()
     {
         return $this->data;
     }
-
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
     
 }
