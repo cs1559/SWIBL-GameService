@@ -4,6 +4,7 @@ namespace swibl\actions;
 
 use Slim\Container;
 use Exception;
+use swibl\GameBuilder;
 use swibl\GameService;
 use swibl\GameServiceResponse;
 
