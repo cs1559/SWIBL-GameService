@@ -46,10 +46,11 @@ $app->add(new swibl\RequestAuthorizer());
 
 // Service Routes
 $app->get('/{id}', \swibl\actions\GetGameAction::class); 
-$app->get('/schedule/{teamid}', \swibl\actions\GetTeamScheduleAction::class);
+$app->get('/schedule/{teamid}/season/{seasonid}', \swibl\actions\GetTeamScheduleAction::class);
 $app->put('/{id}', \swibl\actions\PutGameAction::class);
 $app->post('/', \swibl\actions\PostGameAction::class);
 $app->delete('/{id}', \swibl\actions\DeleteGameAction::class);
+$app->get('/schedule/{teamid}/season/{seasonid}/download', \swibl\actions\DownloadScheduleAction::class);
                             
 $app->run();
                     
