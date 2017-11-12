@@ -1,6 +1,6 @@
 <?php
 
-use swibl\GameService;
+use swibl\services\games\GameService;
 
 // Instantiate the application/service.
 $service = GameService::getInstance();

@@ -6,9 +6,15 @@
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use swibl\GameBuilder;
-use swibl\GameServiceResponse;
-use swibl\GameService;
+use swibl\services\games\GameBuilder;
+use swibl\services\games\GameServiceResponse;
+use swibl\services\games\GameService;
+use swibl\services\games\actions\DeleteGameAction;
+use swibl\services\games\actions\DownloadScheduleAction;
+use swibl\services\games\actions\GetGameAction;
+use swibl\services\games\actions\GetTeamScheduleAction;
+use swibl\services\games\actions\PostGameAction;
+use swibl\services\games\actions\PutGameAction;
 
 require 'vendor/autoload.php';
 
@@ -42,15 +48,15 @@ $config = [
 ];
 
 $app = new \Slim\App($config);
-$app->add(new swibl\RequestAuthorizer());
+$app->add(new swibl\core\RequestAuthorizer());
 
 // Service Routes
-$app->get('/{id}', \swibl\actions\GetGameAction::class); 
-$app->get('/schedule/{teamid}/season/{seasonid}', \swibl\actions\GetTeamScheduleAction::class);
-$app->put('/{id}', \swibl\actions\PutGameAction::class);
-$app->post('/', \swibl\actions\PostGameAction::class);
-$app->delete('/{id}', \swibl\actions\DeleteGameAction::class);
-$app->get('/schedule/{teamid}/season/{seasonid}/download', \swibl\actions\DownloadScheduleAction::class);
+$app->get('/{id}', GetGameAction::class); 
+$app->get('/schedule/{teamid}/season/{seasonid}', GetTeamScheduleAction::class);
+$app->put('/{id}', PutGameAction::class);
+$app->post('/', PostGameAction::class);
+$app->delete('/{id}', DeleteGameAction::class);
+$app->get('/schedule/{teamid}/season/{seasonid}/download', DownloadScheduleAction::class);
                             
 $app->run();
                     

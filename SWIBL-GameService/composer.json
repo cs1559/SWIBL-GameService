@@ -1,13 +1,12 @@
 {
-	"name" : "swibl-gamemicroservice/swibl-gamemicroservice",
+	"name" : "SWIBL-GameService/SWIBL-GameService",
 	"require" : {
 		"slim/slim" : "~3.8",
 		"slim/slim-skeleton" : "~3.1"
 	},
 	"autoload" : {
-		"psr-0" : {
-			"swibl\\" : "src",
-			"cjs\\lib\\" : "src"
+		"psr-4" : {
+			"swibl\\" : "src"
 		}
 	}
 }
