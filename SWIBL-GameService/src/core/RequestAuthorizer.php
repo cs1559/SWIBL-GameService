@@ -112,6 +112,10 @@ abstract class RequestAuthorizer {
             
         }
 
+        // Check SERVICE SPECIFIC AUTHORIZATION RULES
+        if (!self::checkServiceAuthorizations($request)) {
+            return false;
+        }
         
         return true;
     }
