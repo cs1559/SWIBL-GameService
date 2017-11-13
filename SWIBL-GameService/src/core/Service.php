@@ -1,21 +1,11 @@
 <?php
-namespace cjs\lib;
+namespace swibl\core;
 
-class Service {
+abstract class Service {
 
 	var $name = null;
 	var $version = null;
 	var $properties = array();
-
-	static function getInstance() {
-		static $instance;
-		if (!is_object( $instance )) {
-			$instance = new self();
-			$instance->setName("GameMicroservice");
-			$instance->setVersion("0.1");
-		}
-		return $instance;
-	}
 
 	function setName($name) {
 		$this->appname = $name;

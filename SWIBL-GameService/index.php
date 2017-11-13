@@ -1,11 +1,21 @@
 <?php
 
 /**
- * This is the 
+ * This is the main contorller for the GameService.
  */
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use swibl\services\games\GameBuilder;
+use swibl\services\games\GameServiceResponse;
+use swibl\services\games\GameService;
+use swibl\services\games\actions\DeleteGameAction;
+use swibl\services\games\actions\DownloadScheduleAction;
+use swibl\services\games\actions\GetGameAction;
+use swibl\services\games\actions\GetTeamScheduleAction;
+use swibl\services\games\actions\PostGameAction;
+use swibl\services\games\actions\PutGameAction;
+use swibl\services\games\GameRequestAuthorizer;
 
 require 'vendor/autoload.php';
 
@@ -22,8 +32,13 @@ if (file_exists('bootstrap.php'))
  * Season = 20
  */
 /*
- * /games/{id}
- * /games/schedule/{teamid}?season=
+ * ROUTES
+ *
+ * /{id}
+ * /schedule/{teamid}?season=
+ * /update/{id}
+ * /dashboard/
+ *
  */
 
 $config = [
@@ -34,103 +49,17 @@ $config = [
 ];
 
 $app = new \Slim\App($config);
+$app->add(new GameRequestAuthorizer());
 
-
-$app->get('/{id}', function (Request $request, Response $response) {
-
-    $dao = new \swibl\GamesDAO();
-    
-    try {
-        $result = $dao->getGame($request->getAttribute('id'));
-        $game = \swibl\GameHelper::bind($result);
-        $svcresponse = new \cjs\lib\ServiceResponse();
-        $svcresponse->setCode(200);
-        $svcresponse->setData($game);
-        $response->withHeader('Content-Type', 'application/json');
-        $response->write(json_encode($svcresponse));
-    } 
-    catch (\cjs\lib\exception\RecordNotFoundException $e) {
-        $svcresponse = new \cjs\lib\ServiceResponse();
-        $svcresponse->setCode(400);
-        $svcresponse->setMessage($e->getMessage());        
-        $response->withStatus(400);
-        $response->withHeader('Content-Type', 'application/json');
-        $response->write(json_encode($svcresponse));
-        return $response->withStatus(400);
-    } 
-    catch (Exception $e) {
-        $error = new \cjs\lib\Error();
-        $error->setSourcefile("file: " . $e->getFile() . " Line#: " . $e->getLine());
-        $error->setMethod("GET /{id}");
-        $error->setInternalMessage($e->getMessage());
-        $svcresponse = new \cjs\lib\ServiceResponse();
-        $svcresponse->setCode(400);
-        $svcresponse->setMessage($e->getMessage());
-        $svcresponse->addError($error);
-        $response->withStatus(400);
-        $response->withHeader('Content-Type', 'application/json');
-        $response->write(json_encode($svcresponse));
-        return $response->withStatus(400);
-    }
-
-    return $response->withStatus(200);
-});
-    
-    
-$app->get('/schedule/{teamid}', function (Request $request, Response $response, $args) {
-        
-        
-        $uri = $request->getUri();
-        
-        $params = $request->getQueryParams();
-
-        if (isset($params["season"])){
-            $season = $params["season"];
-        } else {
-            $svcresponse = new cjs\lib\ServiceResponse();
-            $error = new cjs\lib\Error();
-            $error->setReference("URL=".$uri);
-            $error->setUserMessage("Missing key parameter - NO SEASON ID provided");
-            $error->setMethod("index.php");
-            $svcresponse->addError($error);
-            $body = $response->getBody();
-            $body->write(json_encode($svcresponse));
-            return $response->withStatus(500)->withHeader('Content-type', 'application/json')->withBody($body);
-        }
-        
-        $teamid = $request->getAttribute("teamid");
-        $dao = new swibl\GamesDAO();
-        $games = $dao->getGameSchedule($teamid, $season);
-        
-//         $db = cjs\lib\Factory::getDatabase();
-//         $db->setQuery("select * from joom_jleague_scores where season = " . $season . " and (awayteam_id = " . $teamid . " or hometeam_id = " . $teamid . ")");
-//         $games = $db->loadObjectList();
-        
-        if($games) {
-            $response->withHeader('Content-Type', 'application/json');
-            $response->write(json_encode($games));
-            
-        } else { throw new Exception('No records found');}
-        
-        return $response;
-    });
-    
-    $app->get('/{id}?upcoming={games}', function (Request $request, Response $response) {
- 
-        echo "getting upcoiming gameS";
-        die;
-//         $dao = new swibl\GamesDAO();
-//         $game = $dao->getGame($request->getAttribute('id'));
-        
-        if($game) {
-            $response->withHeader('Content-Type', 'application/json');
-            $response->write(json_encode($game));
-            
-        } else { throw new Exception('No records found');}
-        
-        return $response;
-    });
-        
-    
-    
+// Service Routes
+$app->get('/{id}', GetGameAction::class); 
+$app->get('/schedule/{teamid}/season/{seasonid}', GetTeamScheduleAction::class);
+$app->put('/{id}', PutGameAction::class);
+$app->post('/', PostGameAction::class);
+$app->delete('/{id}', DeleteGameAction::class);
+$app->get('/schedule/{teamid}/season/{seasonid}/download', DownloadScheduleAction::class);
+                            
 $app->run();
+                    
+                    
+                    

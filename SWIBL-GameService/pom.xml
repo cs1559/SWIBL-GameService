@@ -18,8 +18,8 @@
 	    <sourceDirectory>C:\dev\Git-Repository\SWIBL-GameService\SWIBL-GameService\</sourceDirectory>
 	    <scriptSourceDirectory>C:\Users\Admin\git\SWIBL-GameService\SWIBL-GameService\src\main\scripts</scriptSourceDirectory>
 	    <testSourceDirectory>C:\Users\Admin\git\SWIBL-GameService\SWIBL-GameService\src\test\java</testSourceDirectory>
-	    <outputDirectory>C:\xampp\htdocs\swibl\games</outputDirectory>
-	    <testOutputDirectory>C:\xampp\htdocs\swibl\games</testOutputDirectory>
+	    <outputDirectory>C:\xampp\htdocs\swibl\api\games\v1</outputDirectory>
+	    <testOutputDirectory>C:\xampp\htdocs\swibl\api\games\v1</testOutputDirectory>
          	
     <plugins>
       
@@ -36,14 +36,15 @@
 				</goals>
 				<configuration>
 					<target>
-						<echo>package phase</echo>
-						<copy file="${project.build.sourceDirectory}/readme.txt" todir="${project.build.outputDirectory}/readme.txt"/>
-						<copy todir="${project.build.outputDirectory}">
+						<echo>Build/Install Local phase</echo>
+						<copy file="${project.build.sourceDirectory}/readme.txt" todir="${project.build.testOutputDirectory}/readme.txt"/>
+						<copy todir="${project.build.testOutputDirectory}">
 						    <fileset dir="${project.build.sourceDirectory}"/>
 						</copy>
 					</target>
 				</configuration>
 			</execution>
+			
 		</executions>
 	</plugin>
                   

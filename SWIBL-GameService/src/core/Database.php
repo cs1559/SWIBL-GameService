@@ -1,10 +1,14 @@
 <?php
-namespace cjs\lib;
+namespace swibl\core;
 
 use Exception;
+use swibl\core\exception\RecordNotFoundException;
 
-
-
+/**
+ * 
+ * @author Admin
+ *
+ */
 class Database {
 	
 	var $_connection = null;
@@ -49,7 +53,7 @@ class Database {
 		$signature = serialize( $options );
 
 		if (empty($instance[$signature])) {
-			$instance = new \cjs\lib\Database($options);
+			$instance = new Database($options);
 			$instances[$signature] = $instance;
 		}
 		return $instances[$signature];
@@ -132,7 +136,7 @@ class Database {
 		if ($sql != null) {
 			$this->_sql = $sql;
 		}
-		$this->_sql = str_replace("#_", $this->_prefix,$this->_sql);
+// 		$this->_sql = str_replace("#_", $this->_prefix,$this->_sql);
 
 		$cur = mysqli_query( $this->_connection, $this->_sql );
 		if (!$cur) {
@@ -159,7 +163,7 @@ class Database {
 		if ($object = mysqli_fetch_object( $cur )) {
 			$ret = $object;
 		} else {
-            throw new \cjs\lib\exception\RecordNotFoundException();    
+            throw new RecordNotFoundException();    
 		}
 		mysqli_free_result( $cur );
 		return $ret;
@@ -197,7 +201,12 @@ class Database {
 			}
 		}
 		mysqli_free_result( $cur );
-		return $array;
+		if (count($array) > 0) {
+		  return $array;
+		} else {
+		  throw new RecordNotFoundException();    
+		}
+		
 	}
 	
 	

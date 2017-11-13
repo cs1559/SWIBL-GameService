@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "787252171de5b37e9a629ec3e832dfd1",
+    "content-hash": "9732d3584f3d375b42f16bbadf8830ca",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -405,16 +405,16 @@
         },
         {
             "name": "slim/slim",
-            "version": "3.8.1",
+            "version": "3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim.git",
-                "reference": "5385302707530b2bccee1769613ad769859b826d"
+                "reference": "575a8b53a0a489447915029c69680156cd355304"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim/zipball/5385302707530b2bccee1769613ad769859b826d",
-                "reference": "5385302707530b2bccee1769613ad769859b826d",
+                "url": "https://api.github.com/repos/slimphp/Slim/zipball/575a8b53a0a489447915029c69680156cd355304",
+                "reference": "575a8b53a0a489447915029c69680156cd355304",
                 "shasum": ""
             },
             "require": {
@@ -472,7 +472,7 @@
                 "micro",
                 "router"
             ],
-            "time": "2017-03-19T17:55:20+00:00"
+            "time": "2017-11-04T08:46:46+00:00"
         },
         {
             "name": "slim/slim-skeleton",

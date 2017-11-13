@@ -1,5 +1,5 @@
 <?php
-namespace cjs\lib\exception;
+namespace swibl\core\exception;
 
 class RecordNotFoundException extends \Exception {
     

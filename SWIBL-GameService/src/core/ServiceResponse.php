@@ -1,15 +1,23 @@
 <?php
-namespace cjs\lib;
+namespace swibl\core;
 
-class ServiceResponse {
+abstract class ServiceResponse implements \JsonSerializable {
     
     const SUCCESS = true;
     const FAIL = false;
 
-    var $code = null;
-    var $message = null;
-    var $data = null;
-    var $errors = array();
+    protected $code = null;
+    protected $message = null;
+    protected $data = null;
+    protected $errors = array();
+    
+    public function __construct($code, $message)
+    {
+        $this->setCode($code);
+        $this->setMessage($message);
+        $this->data = $data;
+    }
+    
     
     /**
      * @return the $code
@@ -26,7 +34,8 @@ class ServiceResponse {
     {
         return $this->message;
     }
-
+    
+  
     /**
      * @param field_type $code
      */
@@ -43,12 +52,7 @@ class ServiceResponse {
         $this->message = $message;
     }
 
-    public function setData($content) {
-        $this->data = $content;
-    }
-    public function getData() {
-        return $this->data;
-    }
+    abstract public function getData();
     
     public function addError(Error $error) {
         $this->errors[] = $error;
@@ -56,5 +60,14 @@ class ServiceResponse {
     
     public function getErrors() {
         return $this->errors;
+    }
+    
+    public function jsonSerialize() {
+        return [
+            'code' => $this->code,
+            'message' => $this->message,
+            'errors' => $this->errors,
+            'data' => $this->data
+        ];
     }
 }

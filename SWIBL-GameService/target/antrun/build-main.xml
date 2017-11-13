@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="maven-antrun-" default="main"  >
 <target name="main">
-  <echo>package phase</echo>
-  <copy file="C:\dev\Git-Repository\SWIBL-GameService\SWIBL-GameService/readme.txt" todir="C:\xampp\htdocs\swibl\games/readme.txt"/>
-  <copy todir="C:\xampp\htdocs\swibl\games">
+  <echo>Build/Install Local phase</echo>
+  <copy file="C:\dev\Git-Repository\SWIBL-GameService\SWIBL-GameService/readme.txt" todir="C:\xampp\htdocs\swibl\api\games\v1/readme.txt"/>
+  <copy todir="C:\xampp\htdocs\swibl\api\games\v1">
     <fileset dir="C:\dev\Git-Repository\SWIBL-GameService\SWIBL-GameService"/>
   </copy>
 </target>

@@ -1,5 +1,5 @@
 <?php
-namespace cjs\lib;
+namespace swibl\core;
 
 class Error {
     
