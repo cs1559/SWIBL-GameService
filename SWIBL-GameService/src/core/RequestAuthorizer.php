@@ -1,10 +1,12 @@
 <?php
 namespace swibl\core;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use swibl\core\authentication\AuthDAO;
 
 abstract class RequestAuthorizer {
-
+    
     var $service = null;
     
     /**
@@ -14,7 +16,7 @@ abstract class RequestAuthorizer {
     {
         return $this->service;
     }
-
+    
     /**
      * @param field_type $service
      */
@@ -22,12 +24,12 @@ abstract class RequestAuthorizer {
     {
         $this->service = $service;
     }
-
-    public function __invoke(\Psr\Http\Message\ServerRequestInterface $request, 
-        \Psr\Http\Message\ResponseInterface $response, 
+    
+    public function __invoke(\Psr\Http\Message\ServerRequestInterface $request,
+        \Psr\Http\Message\ResponseInterface $response,
         $next)
     {
-
+        
         $service = $this->getService();
         
         // Support a global permission for all GET requests.
@@ -54,11 +56,11 @@ abstract class RequestAuthorizer {
         $service = $this->getService();
         $db = $service->getDatabase();
         $logger = $service->getLogger();
-
+        
         $clientid = $request->getHeaderLine("PHP_AUTH_USER");
         
         $dao = AuthDAO::getInstance($db);
-      
+        
         $logger->info("Authentication API call for " . $clientid);
         
         try {
@@ -68,13 +70,13 @@ abstract class RequestAuthorizer {
             $logger->info("Client " . $clientid . " did not have an authtoken granted");
             $secret="";
         }
-     
-
+        
+        
         $signature = $request->getHeaderLine("HTTP_SIGNATURE");
         $nonce = $request->getHeaderLine("HTTP_NONCE");
         $key = $request->getHeaderLine("PHP_AUTH_PW");
         
-
+        
         $calculated_signature = base64_encode(hash_hmac("sha256", $key . ":" . $nonce, $secret, True));
         
         if ($logger->getLevel() > 2) {
@@ -85,7 +87,7 @@ abstract class RequestAuthorizer {
             $logger->debug("REQUEST SIGNATURE /" . $request->getHeaderLine("HTTP_SIGNATURE"));
             $logger->debug("CALCULATED SIGNATURE = " . $calculated_signature);
         }
-       
+        
         if ($signature != $calculated_signature) {
             $logger->error("[Client " . $clientid . "] INVALID SIGNATURE ".$_SERVER['REQUEST_METHOD'] );
             return false;
@@ -109,9 +111,10 @@ abstract class RequestAuthorizer {
                 $logger->error("[Client " . $clientid . "] NOT AUTHORIZED FOR ".$_SERVER['REQUEST_METHOD'] . " OPERATION" );
                 return false;
                 break;
-            
+                
         }
-
+        
+        
         // Check SERVICE SPECIFIC AUTHORIZATION RULES
         if (!self::checkServiceAuthorizations($request)) {
             return false;
@@ -119,5 +122,7 @@ abstract class RequestAuthorizer {
         
         return true;
     }
+    
+    abstract function checkServiceAuthorizations(ServerRequestInterface $request);
     
 }
