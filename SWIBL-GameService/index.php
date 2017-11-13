@@ -15,6 +15,7 @@ use swibl\services\games\actions\GetGameAction;
 use swibl\services\games\actions\GetTeamScheduleAction;
 use swibl\services\games\actions\PostGameAction;
 use swibl\services\games\actions\PutGameAction;
+use swibl\services\games\GameRequestAuthorizer;
 
 require 'vendor/autoload.php';
 
@@ -48,7 +49,7 @@ $config = [
 ];
 
 $app = new \Slim\App($config);
-$app->add(new swibl\core\RequestAuthorizer());
+$app->add(new GameRequestAuthorizer());
 
 // Service Routes
 $app->get('/{id}', GetGameAction::class); 
