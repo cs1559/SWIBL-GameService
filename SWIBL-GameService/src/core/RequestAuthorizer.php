@@ -1,16 +1,39 @@
 <?php
 namespace swibl\core;
 
-use swibl\services\games\GameService;
+use swibl\core\authentication\AuthDAO;
 
-class RequestAuthorizer {
+abstract class RequestAuthorizer {
+
+    var $service = null;
     
+    /**
+     * @return the $service
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * @param field_type $service
+     */
+    public function setService($service)
+    {
+        $this->service = $service;
+    }
+
     public function __invoke(\Psr\Http\Message\ServerRequestInterface $request, 
         \Psr\Http\Message\ResponseInterface $response, 
         $next)
     {
 
-        $service = GameService::getInstance();
+        $service = $this->getService();
+        
+        // Support a global permission for all GET requests.
+        if ($_SERVER['REQUEST_METHOD'] == "GET") {
+            return $next($request, $response);
+        }
         
         if ($service->isAuthenticationEnabled()) {
             // Authenticate the request.
@@ -28,37 +51,69 @@ class RequestAuthorizer {
      * @return boolean
      */
     function authenticateRequest(\Psr\Http\Message\ServerRequestInterface $request) {
+        $service = $this->getService();
+        $db = $service->getDatabase();
+        $logger = $service->getLogger();
+
+        $clientid = $request->getHeaderLine("PHP_AUTH_USER");
+        
+        $dao = AuthDAO::getInstance($db);
+      
+        $logger->info("Authentication API call for " . $clientid);
+        
+        try {
+            $token = $dao->getAUthToken($clientid);
+            $secret = $token->getConsumersecret();
+        } catch (\Exception $e) {
+            $logger->info("Client " . $clientid . " did not have an authtoken granted");
+            $secret="";
+        }
+     
+
         $signature = $request->getHeaderLine("HTTP_SIGNATURE");
         $nonce = $request->getHeaderLine("HTTP_NONCE");
         $key = $request->getHeaderLine("PHP_AUTH_PW");
-        $secret = "394592742SASDNVxcwe23923";
-        $calculated_signature = base64_encode(hash_hmac("sha256", $key . ":" . $nonce, $secret, True));
-
-        if ($signature != $calculated_signature) {
-            return false;
-        }
         
-        $service = GameService::getInstance();
-        if ($service->isLogEnabled()) {
-            $logger = $service->getLogger();
-            
+
+        $calculated_signature = base64_encode(hash_hmac("sha256", $key . ":" . $nonce, $secret, True));
+        
+        if ($logger->getLevel() > 2) {
             $headers = $request->getHeaders();
             foreach ($headers as $name => $values) {
-                $logger->write($name . ": " . implode(", ", $values));
+                $logger->debug($name . ": " . implode(", ", $values));
             }
-            
-            if ($logger->getLevel() > 2) {
-                $logger->info("REQUEST SIGNATURE /" . $request->getHeaderLine("HTTP_SIGNATURE"));
-                $logger->info("CALCULATED SIGNATURE = " . $calculated_signature);
-            }
+            $logger->debug("REQUEST SIGNATURE /" . $request->getHeaderLine("HTTP_SIGNATURE"));
+            $logger->debug("CALCULATED SIGNATURE = " . $calculated_signature);
         }
-        
-        if ($service->isAuthenticationEnabled()) {
-            // ADD AUTHENTICATION LOGIC HERE
+       
+        if ($signature != $calculated_signature) {
+            $logger->error("[Client " . $clientid . "] INVALID SIGNATURE ".$_SERVER['REQUEST_METHOD'] );
             return false;
         } else {
-            return true;
+            $logger->debug("REQUEST SIGNATURE MATCHED");
         }
+        
+        switch ($_SERVER['REQUEST_METHOD']) {
+            case "POST":
+                if ($token->canPost()) return true;
+                $logger->error("[Client " . $clientid . "] NOT AUTHORIZED FOR ".$_SERVER['REQUEST_METHOD'] . " OPERATION" );
+                return false;
+                break;
+            case "PUT":
+                if ($token->canPut()) return true;
+                $logger->error("[Client " . $clientid . "] NOT AUTHORIZED FOR ".$_SERVER['REQUEST_METHOD'] . " OPERATION" );
+                return false;
+                break;
+            case "DELETE":
+                if ($token->canDelete()) return true;
+                $logger->error("[Client " . $clientid . "] NOT AUTHORIZED FOR ".$_SERVER['REQUEST_METHOD'] . " OPERATION" );
+                return false;
+                break;
+            
+        }
+
+        
+        return true;
     }
     
 }
