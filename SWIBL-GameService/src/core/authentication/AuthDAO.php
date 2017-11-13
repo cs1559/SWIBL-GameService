@@ -3,12 +3,6 @@ namespace swibl\core\authentication;
 
 use Exception;
 use swibl\core\Database;
-use swibl\core\DateUtil;
-use swibl\services\games\Game;
-use swibl\services\games\GameService;
-use swibl\services\games\GamesDAO;
-
-// use cjs\lib\Factory;
 
 class AuthDAO {
     
@@ -23,7 +17,7 @@ class AuthDAO {
     static function getInstance(Database $db) {
         static $instance;
         if (!is_object( $instance )) {
-            $instance = new GamesDAO();
+            $instance = new AuthDAO();
         }
         $instance->setDatabase($db);
         return $instance;
@@ -41,94 +35,28 @@ class AuthDAO {
      * 
      * @param unknown $id 
      * @throws Exception
-     * @return array
+     * @return AuthToken;
      */
-    function getGame($id) {
+    function getAuthToken($clientid) {
         
         $db = $this->getDatabase();
-        $db->setQuery("select * from joom_jleague_scores where id = " . $id);
+        $db->setQuery("select * from client_authorization where clientid = '" . $clientid . "'");
         try {
             $result = $db->loadObject(); 
+            $token = new AuthToken();
+            $token->setClientId($result->clientid);
+            $token->setConsumersecret($result->consumer_secret);
+            $token->setConsumerkey($result->consumer_key);
+            $token->setDelete($result->allow_delete);
+            $token->setPost($result->allow_post);
+            $token->setPut($result->allow_put);
+            $token->setGet($result->allow_get);
+//             $token->setApiname($result->apiname);
+            return $token;
          } catch (\Exception $e) { 
             throw $e;
         }
         return $result;
-    }
-    
-    /**
-     * This function will return the game schedule for a team / season.
-     * @param unknown $teamid
-     * @param unknown $season
-     * @throws Exception
-     * @return array
-     */
-    function getGameSchedule($teamid, $season) {
-        
-        $db = $this->getDatabase();
-        $db->setQuery("select * from joom_jleague_scores where season = " . $season . " and (awayteam_id = " . $teamid . " or hometeam_id = " . $teamid . ")");
-        try {
-            $games = $db->loadObjectList();
-        } catch (\Exception $e) {
-            throw $e;
-        }
-        return $games;
-    }
-
-    /**
-     * 
-     */
-    function update(Game $obj) {
-        $service = GameService::getInstance();
-        $logger = $service->getLogger();
-        $logEnabled = $service->isLogEnabled();
-        if ($logEnabled) {
-            $logger->info("Attempting to update record " . $obj->getId());
-        }
-        
-        $db = $this->getDatabase();
-        $newGameDate = DateUtil::dateConvertForInput($obj->getGameDate());
-        if ($logEnabled) {
-            $logger->info("after date conversion " . $obj->getId());
-        }
-        $query = 'update joom_jleague_scores set '
-            . ' division_id = "' . $obj->getDivisionId(). '", '
-            . ' season = "' . $obj->getSeason(). '", '
-            . ' game_date = date("' . $newGameDate. '"), '
-            . ' hometeam_id = "' . $obj->getHometeamId(). '", '
-            . ' awayteam_id = "' . $obj->getAwayteamId(). '", '
-            . ' hometeam_score = "' . $obj->getHometeamScore(). '", '
-            . ' awayteam_score = "' . $obj->getAwayteamScore(). '", '
-            . ' forfeit = "' . $obj->getForfeit(). '", '
-            . ' conference_game = "' . $obj->getConferenceGame(). '", '
-            . ' hometeam_name = "' . $obj->getHometeam(). '", '
-            . ' awayteam_name = "' . $obj->getAwayteam(). '", '
-            . ' hometeam_in_league = "' . $obj->getHomeLeagueFlag(). '", '
-            . ' awayteam_in_league = "' . $obj->getAwayLeagueFlag(). '", '
-//             . ' properties = "' . $obj->getFormattedProperties(). '", '
-            . ' location = "' . $obj->getLocation(). '", '
-            . ' highlights = "' . $obj->getHighlights(). '", '
-            . ' gametime = "' . $obj->getGameTime(). '", '
-            . ' gamestatus = "' . $obj->getGameStatus(). '", '
-            . ' shortgame = "' . $obj->getShortgame(). '", '
-            . ' updatedby = "' . $obj->getUpdatedBy() . '", '
-            . ' dateupdated = NOW() '
-            . ' where id = ' . $obj->getId();
-          
-            $logger->info("After setting query");
-            $logger->info($query);
-
-            
-            if (!$db->query($query)) {
-                if ($logEnabled) {
-                    $logger->error($db->getErrorMsg());
-                }
-                throw new Exception($db->getErrorMsg());
-            } else {
-                if ($logEnabled) {
-                    $logger->info("Record ID " . $obj->getId() . " has been updated");
-                }
-                return true;
-            }	                                                                                              
     }
     
 }
