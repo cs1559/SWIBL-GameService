@@ -1,7 +1,6 @@
 <?php
 namespace swibl\core;
 
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use swibl\core\authentication\AuthDAO;
 
@@ -25,7 +24,7 @@ abstract class RequestAuthorizer {
         $this->service = $service;
     }
     
-    public function __invoke(\Psr\Http\Message\ServerRequestInterface $request,
+    public function __invoke(ServerRequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,
         $next)
     {
