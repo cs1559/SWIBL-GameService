@@ -2,7 +2,7 @@
 namespace swibl\services\games;
 
 
-require_once ("game.php");
+require_once ("Game.php");
 
 /**
  * 
