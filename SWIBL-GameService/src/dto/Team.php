@@ -64,8 +64,9 @@ class Team implements \JsonSerializable {
 	function getLogo() {
 		if (strlen($this->logo) > 0) {
 			return $this->logo;
-		} else
+		} else {
 			return "default-logo.jpg";
+		}
 	}
 	function setLogo($fn) {
 		$this->logo = $fn;

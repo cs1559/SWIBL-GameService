@@ -51,7 +51,6 @@ class AuthDAO {
             $token->setPost($result->allow_post);
             $token->setPut($result->allow_put);
             $token->setGet($result->allow_get);
-//             $token->setApiname($result->apiname);
             return $token;
          } catch (\Exception $e) { 
             throw $e;

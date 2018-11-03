@@ -53,7 +53,7 @@ class GameService extends Application {
         $parms["database"] = $ini["database"];
         $parms["user"] = $ini["user"];
         $parms["password"] = $ini["password"];
-        $db = & Database::getInstance($parms);
+        $db = Database::getInstance($parms);
         $this->setDatabase($db);
         
         // Create the logger
